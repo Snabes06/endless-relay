@@ -6,10 +6,12 @@ extends CanvasLayer
 @onready var momentum_label = $MomentumLabel
 @onready var perfect_label = $PerfectLabel
 @onready var obstacle_label = $ObstacleLabel
+@onready var event_label = $EventLabel
 
 func _ready():
     perfect_label.visible = false
     obstacle_label.visible = false
+    event_label.visible = false
 
 func update_hud(stamina: float, _pace: float, momentum: float, burst_ready: bool):
     stamina_bar.value = stamina
@@ -29,5 +31,13 @@ func show_obstacle():
     obstacle_label.visible = true
     $ObstacleTimer.start()
 
+func show_event(event_name: String):
+    event_label.text = event_name
+    event_label.visible = true
+    $EventTimer.start()
+
 func _on_ObstacleTimer_timeout():
     obstacle_label.visible = false
+
+func _on_EventTimer_timeout():
+    event_label.visible = false

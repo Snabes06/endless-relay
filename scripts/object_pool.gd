@@ -44,3 +44,12 @@ func release_instance(inst: Node) -> void:
         inst.transform = Transform3D()
     _pool.append(inst)
 
+func get_pool_count() -> int:
+    return _pool.size()
+
+func get_in_use_count() -> int:
+    return _in_use.size()
+
+func get_total_capacity() -> int:
+    return pool_size
+

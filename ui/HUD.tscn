@@ -49,6 +49,14 @@ anchor_bottom = 0.16
 text = "Perfect!"
 visible = false
 
+[node name="EventLabel" type="Label" parent="."]
+anchor_left = 0.35
+anchor_top = 0.06
+anchor_right = 0.65
+anchor_bottom = 0.10
+text = ""
+visible = false
+
 [node name="PerfectTimer" type="Timer" parent="."]
 one_shot = true
 wait_time = 0.8
@@ -66,3 +74,8 @@ visible = false
 one_shot = true
 wait_time = 1.0
 connects = [ { "signal": "timeout", "target": "..", "method": "_on_ObstacleTimer_timeout" } ]
+
+[node name="EventTimer" type="Timer" parent="."]
+one_shot = true
+wait_time = 1.5
+connects = [ { "signal": "timeout", "target": "..", "method": "_on_EventTimer_timeout" } ]
