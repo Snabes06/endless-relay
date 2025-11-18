@@ -1,0 +1,68 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource path="res://ui/hud.gd" type="Script" id=1]
+
+[node name="HUD" type="CanvasLayer"]
+script = ExtResource( 1 )
+
+[node name="StaminaBar" type="ProgressBar" parent="."]
+anchor_left = 0.02
+anchor_top = 0.88
+anchor_right = 0.3
+anchor_bottom = 0.95
+value = 100
+
+[node name="StaminaLabel" type="Label" parent="."]
+anchor_left = 0.02
+anchor_top = 0.82
+anchor_right = 0.1
+anchor_bottom = 0.88
+text = "100"
+
+[node name="MomentumBar" type="ProgressBar" parent="."]
+anchor_left = 0.7
+anchor_top = 0.88
+anchor_right = 0.98
+anchor_bottom = 0.95
+value = 0
+
+[node name="MomentumLabel" type="Label" parent="."]
+anchor_left = 0.7
+anchor_top = 0.82
+anchor_right = 0.78
+anchor_bottom = 0.88
+text = "0"
+
+[node name="BurstLabel" type="Label" parent="."]
+anchor_left = 0.45
+anchor_top = 0.02
+anchor_right = 0.55
+anchor_bottom = 0.06
+text = "Burst Ready"
+visible = false
+
+[node name="PerfectLabel" type="Label" parent="."]
+anchor_left = 0.4
+anchor_top = 0.12
+anchor_right = 0.6
+anchor_bottom = 0.16
+text = "Perfect!"
+visible = false
+
+[node name="PerfectTimer" type="Timer" parent="."]
+one_shot = true
+wait_time = 0.8
+connects = [ { "signal": "timeout", "target": "..", "method": "_on_PerfectTimer_timeout" } ]
+
+[node name="ObstacleLabel" type="Label" parent="."]
+anchor_left = 0.4
+anchor_top = 0.18
+anchor_right = 0.6
+anchor_bottom = 0.22
+text = "Ouch"
+visible = false
+
+[node name="ObstacleTimer" type="Timer" parent="."]
+one_shot = true
+wait_time = 1.0
+connects = [ { "signal": "timeout", "target": "..", "method": "_on_ObstacleTimer_timeout" } ]

@@ -1,0 +1,19 @@
+{
+  "stamina_max": 100,
+  "stamina_regen_rate": 6.0,
+  "stamina_drain_rate": 12.0,
+  "momentum_max": 100,
+  "momentum_gain_rate": 2.0,
+  "momentum_gain_window": { "min": 0.95, "max": 1.15 },
+  "burst_cost": 40,
+  "burst_duration": 1.6,
+  "burst_speed_mult": 1.6,
+  "base_speed": 8.0,
+  "sprint_multiplier": 1.45,
+  "lane_count": 3,
+  "lane_width": 2.0,
+  "lateral_speed": 12.0,
+  "gravity": -24.0,
+  "jump_speed": 8.5,
+  "jump_cost": 8
+}
