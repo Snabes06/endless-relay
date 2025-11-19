@@ -9,7 +9,8 @@ func _ready():
 		{"name": "use_momentum", "key": KEY_SPACE},
 		{"name": "jump", "key": KEY_W},
 		{"name": "slide", "key": KEY_S},
-		{"name": "vault", "key": KEY_V}
+		{"name": "vault", "key": KEY_V},
+		{"name": "toggle_side_cam", "key": KEY_F2}
 	]
 	for action in actions:
 		if not InputMap.has_action(action.name):

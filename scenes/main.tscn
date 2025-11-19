@@ -1,16 +1,14 @@
-[gd_scene load_steps=15 format=3 uid="uid://c4bubxyahvvy7"]
+[gd_scene load_steps=17 format=3 uid="uid://c4bubxyahvvy7"]
 
 [ext_resource type="PackedScene" path="res://scenes/player.tscn" id="1"]
 [ext_resource type="PackedScene" path="res://ui/HUD.tscn" id="2"]
-[ext_resource type="PackedScene" path="res://scenes/spawner.tscn" id="3"]
-[ext_resource type="PackedScene" path="res://scenes/level_segment.tscn" id="4"]
 [ext_resource type="Script" uid="uid://7qsug7fu2vuw" path="res://scripts/events/event_manager.gd" id="5"]
-[ext_resource type="PackedScene" path="res://scenes/chaser.tscn" id="6"]
-[ext_resource type="PackedScene" path="res://scenes/debug_overlay.tscn" id="7"]
 [ext_resource type="Script" uid="uid://csxd2brmr8wu3" path="res://scripts/main_setup.gd" id="13"]
 [ext_resource type="Script" uid="uid://dug45p6fgx63w" path="res://scripts/follow_camera.gd" id="14"]
-[ext_resource type="PackedScene" path="res://scenes/terrain_segment.tscn" id="22"]
-[ext_resource type="Script" uid="uid://c2isdmbrtj1rl" path="res://scripts/segment_manager.gd" id="23"]
+[ext_resource type="Script" path="res://scripts/side_camera.gd" id="21"]
+[ext_resource type="PackedScene" path="res://scenes/obstacle.tscn" id="40"]
+[ext_resource type="PackedScene" path="res://scenes/slope.tscn" id="41"]
+[ext_resource type="Script" path="res://scripts/proc_manager.gd" id="42"]
 
 [sub_resource type="PhysicalSkyMaterial" id="10"]
 
@@ -23,6 +21,15 @@ background_color = Color(0.4, 0.7, 1, 1)
 sky = SubResource("11")
 ambient_light_color = Color(0.5, 0.5, 0.5, 1)
 
+[sub_resource type="StandardMaterial3D" id="30"]
+albedo_color = Color(0.22, 0.55, 0.28, 1.0)
+
+[sub_resource type="BoxMesh" id="20"]
+size = Vector3(40, 1, 800)
+
+[sub_resource type="BoxShape3D" id="21"]
+extents = Vector3(20, 0.5, 400)
+
 [node name="Main" type="Node3D"]
 script = ExtResource("13")
 
@@ -33,19 +40,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 8)
 current = true
 script = ExtResource("14")
-yaw_offset_deg = 180.0
 
-initial_segments = 20
-
-[node name="Spawner" parent="." instance=ExtResource("3")]
-
-[node name="LevelSegment" parent="." instance=ExtResource("4")]
-
-[node name="EventManager" type="Node3D" parent="."]
-script = ExtResource("5")
-chaser_scene = ExtResource("6")
-
-[node name="DebugOverlay" parent="." instance=ExtResource("7")]
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("12")
@@ -57,10 +52,39 @@ shadow_enabled = true
 shadow_bias = 0.02
 shadow_normal_bias = 0.8
 
-[node name="SegmentManager" type="Node3D" parent="."]
-script = ExtResource("23")
-segment_scene = ExtResource("22")
-initial_segments = 8
-recycle_buffer = 10.0
+[node name="DebugSideCam" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 6, 0)
+current = false
+fov = 100.0
+script = ExtResource("21")
+target_path = NodePath("../Player")
+offset = Vector3(14, 6, 0)
+look_ahead_z = -4.0
 
-[node name="StarterSegment" parent="SegmentManager" instance=ExtResource("22")]
+
+[node name="GroundBody" type="StaticBody3D" parent="."]
+collision_layer = 1
+collision_mask = 1
+transform = Transform3D(1,0,0,0,1,0,0,0,1,0,-0.25,0)
+
+	[node name="GroundMesh" type="MeshInstance3D" parent="GroundBody"]
+	mesh = SubResource("20")
+	material_override = SubResource("30")
+
+	[node name="GroundCollider" type="CollisionShape3D" parent="GroundBody"]
+	shape = SubResource("21")
+
+[node name="ProcManager" type="Node3D" parent="."]
+script = ExtResource("42")
+player_path = NodePath("../Player")
+obstacle_scene = ExtResource("40")
+slope_scene = ExtResource("41")
+lane_count = 3
+lane_width = 2.0
+spawn_ahead_min = 20.0
+spawn_ahead_max = 40.0
+recycle_behind = 8.0
+slope_chance = 0.25
+spawn_interval_z = 8.0
+
+

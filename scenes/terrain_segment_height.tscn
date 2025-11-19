@@ -1,0 +1,25 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource path="res://scripts/terrain_segment_height.gd" type="Script" id=1]
+
+[sub_resource type="StandardMaterial3D" id=2]
+albedo_color = Color(0.3, 0.5, 0.35, 1)
+roughness = 1.0
+
+[node name="TerrainSegmentHeight" type="Node3D"]
+script = ExtResource(1)
+material = SubResource(2)
+length_z = 60.0
+width_x = 6.0
+lane_count = 3
+lane_width = 2.0
+subdivisions_z = 60
+subdivisions_x = 12
+amplitude = 2.0
+frequency = 0.05
+octave_count = 3
+persistence = 0.5
+noise_seed = 9876
+smooth_edges = true
+edge_falloff_z = 6.0
+debug = true

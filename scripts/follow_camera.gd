@@ -1,7 +1,7 @@
 extends Camera3D
 
 @export var target_path: NodePath = NodePath("Player")
-@export var offset: Vector3 = Vector3(0, 3, -8)
+@export var offset: Vector3 = Vector3(0, 4, 10)
 @export var look_offset: Vector3 = Vector3(0, 1, 0)
 @export var smooth_speed: float = 8.0
 @export var yaw_offset_deg: float = 0.0
@@ -22,7 +22,7 @@ func _ready():
     print("[FollowCamera] ready; cam pos=", global_transform.origin)
     # Ensure clip planes are reasonable
     near = 0.05
-    far = 400.0
+    far = 2000.0
 
 func _process(delta):
     if not _initialized:
@@ -35,10 +35,11 @@ func _process(delta):
     # simple smooth lerp
     var new_pos = global_transform.origin.lerp(desired_pos, clamp(smooth_speed * delta, 0.0, 1.0))
     global_transform.origin = new_pos
-    look_at(_target.global_transform.origin + look_offset, Vector3.UP)
-    if abs(yaw_offset_deg) > 0.001:
-        # Apply a deterministic yaw offset after look_at each frame
-        global_transform.basis = global_transform.basis.rotated(Vector3.UP, deg_to_rad(yaw_offset_deg))
+    # Look directly at the player from the current offset (stable front-facing)
+    var look_target = _target.global_transform.origin + look_offset
+    look_at(look_target, Vector3.UP)
+    # Ensure camera forward points toward negative Z travel direction
+    # Player travels along -Z, so we place camera slightly ahead (+Z) and look back.
     # fail-safe: if we somehow look away (dot forward vs target direction > 0.99) do a reset
     var to_target = (_target.global_transform.origin - global_transform.origin).normalized()
     var fwd = -global_transform.basis.z

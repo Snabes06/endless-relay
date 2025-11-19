@@ -13,6 +13,12 @@ func _ready():
 func _on_body_entered(body):
     if not body:
         return
+    var bname = ""
+    if body.has_method("get_name"):
+        bname = body.get_name()
+    else:
+        bname = str(body)
+    print("[OBSTACLE] body entered=", bname)
     # If an action is required to avoid the obstacle, ask the body if it's performing it
     if required_action != "" and body.has_method("is_performing_action"):
         var ok = body.is_performing_action(required_action)
