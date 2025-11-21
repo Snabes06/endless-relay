@@ -1,18 +1,18 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=3 format=3 uid="uid://doeisyxtp0ndb"]
 
-[ext_resource path="res://scenes/obstacle.tscn" type="PackedScene" id=1]
-[ext_resource path="res://scenes/perfect_stride.tscn" type="PackedScene" id=2]
+[ext_resource type="PackedScene" path="res://scenes/obstacle.tscn" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/perfect_stride.tscn" id="2"]
 
 [node name="LevelSegment" type="Node3D"]
 
-[node name="Obstacle1" parent="." instance=ExtResource( 1 )]
-transform = Transform3D( 1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, -12 )
+[node name="Obstacle1" parent="." instance=ExtResource("1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, -12)
 
-[node name="Obstacle2" parent="." instance=ExtResource( 1 )]
-transform = Transform3D( 1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, -18 )
+[node name="Obstacle2" parent="." instance=ExtResource("1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, -18)
 
-[node name="Perfect1" parent="." instance=ExtResource( 2 )]
-transform = Transform3D( 1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, -9 )
+[node name="Perfect1" parent="." instance=ExtResource("2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, -9)
 
-[node name="Perfect2" parent="." instance=ExtResource( 2 )]
-transform = Transform3D( 1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, -15 )
+[node name="Perfect2" parent="." instance=ExtResource("2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, -15)

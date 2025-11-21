@@ -4,18 +4,22 @@
 albedo_color = Color(0.4, 0.4, 0.6, 1.0)
 roughness = 0.9
 
+
 [sub_resource type="BoxMesh" id=2]
-size = Vector3(6, 0.4, 8)
+size = Vector3(2, 0.4, 8)
+
 
 [sub_resource type="BoxShape3D" id=3]
-extents = Vector3(3, 0.2, 4)
+extents = Vector3(1, 0.2, 4)
 
 [node name="Slope" type="Node3D"]
+
 
 [node name="SlopeBody" type="StaticBody3D" parent="."]
 collision_layer = 1
 collision_mask = 1
-transform = Transform3D(1, 0, 0, 0, 0.965926, -0.258819, 0, 0.258819, 0.965926, 0, 0.0, 0)
+# 40 degrees incline: cos(40°)=0.766044, sin(40°)=0.642788
+transform = Transform3D(1, 0, 0, 0, 0.766044, -0.642788, 0, 0.642788, 0.766044, 0, 0.0, 0)
 
     [node name="SlopeMesh" type="MeshInstance3D" parent="SlopeBody"]
     mesh = SubResource(2)

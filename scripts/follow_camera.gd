@@ -22,7 +22,7 @@ func _ready():
     print("[FollowCamera] ready; cam pos=", global_transform.origin)
     # Ensure clip planes are reasonable
     near = 0.05
-    far = 2000.0
+    far = 4000.0
 
 func _process(delta):
     if not _initialized:

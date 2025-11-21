@@ -43,14 +43,17 @@ func _process(_delta: float):
 func _spawn_one(zpos: float):
 	var roll = randf()
 	if roll < slope_chance and slope_scene:
+		var lane = randi() % lane_count
+		var center = float(lane_count - 1) / 2.0
+		var x = (lane - center) * lane_width
 		var slope = slope_scene.instantiate()
 		if slope is Node3D:
 			var n3 = slope as Node3D
-			n3.position = Vector3(0, 0, zpos)
+			n3.position = Vector3(x, 0, zpos)
 			get_parent().add_child(n3)
 			_spawned.append(n3)
 			if debug:
-				print("[PROC] slope at z=", zpos)
+				print("[PROC] slope lane=", lane, " z=", zpos)
 			return
 	if obstacle_scene:
 		var lane = randi() % lane_count
