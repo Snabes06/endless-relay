@@ -1,0 +1,22 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/turn_trigger.gd" id="1"]
+[ext_resource type="PackedScene" path="res://ui/TurnPrompt.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/ground_x.tscn" id="3"]
+
+[sub_resource type="BoxShape3D" id="1"]
+size = Vector3(6, 3, 6)
+
+[node name="TurnTrigger" type="Area3D"]
+script = ExtResource("1")
+prompt_scene = ExtResource("2")
+input_action = &"move_left"
+slow_time_scale = 0.3
+prompt_duration_sec = 1.5
+one_shot = true
+ground_scene_x = ExtResource("3")
+monitorable = true
+monitoring = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("1")

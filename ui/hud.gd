@@ -1,43 +1,63 @@
 extends CanvasLayer
 
-@onready var stamina_bar = $StaminaBar
-@onready var momentum_bar = $MomentumBar
-@onready var stamina_label = $StaminaLabel
-@onready var momentum_label = $MomentumLabel
-@onready var perfect_label = $PerfectLabel
-@onready var obstacle_label = $ObstacleLabel
-@onready var event_label = $EventLabel
+var score_label: Label = null
+var high_score_label: Label = null
+
+var _start_z: float = 0.0
+var _player: CharacterBody3D = null
+var _score_manager: Node = null
+
 
 func _ready():
-	perfect_label.visible = false
-	obstacle_label.visible = false
-	event_label.visible = false
+	# fetch labels safely
+	score_label = get_node_or_null("ScoreLabel")
+	high_score_label = get_node_or_null("HighScoreLabel")
+	if not score_label or not high_score_label:
+		print("[HUD] Score labels missing; will skip score updates until present.")
+	# locate player in scene (assumes HUD sibling or parent has Player)
+	_player = get_tree().current_scene.get_node_or_null("Player")
+	if _player:
+		_start_z = _player.global_transform.origin.z
+	else:
+		print("[HUD] Player node not found for scoring")
+	_score_manager = get_tree().root.get_node_or_null("ScoreManager")
+	if _score_manager and _score_manager.has_method("reset_run"):
+		_score_manager.reset_run()
+	_update_score_display(0, _get_high_score())
 
-func update_hud(stamina: float, _pace: float, momentum: float, burst_ready: bool):
-	stamina_bar.value = stamina
-	stamina_label.text = str(int(stamina))
-	momentum_bar.value = momentum
-	momentum_label.text = str(int(momentum))
-	$BurstLabel.visible = burst_ready
+## Deprecated external HUD APIs kept as no-ops for compatibility
+func update_hud(_stamina: float, _pace: float, _momentum: float, _burst_ready: bool):
+	pass
 
 func show_perfect():
-	perfect_label.visible = true
-	$PerfectTimer.start()
-
-func _on_PerfectTimer_timeout():
-	perfect_label.visible = false
+	pass
 
 func show_obstacle():
-	obstacle_label.visible = true
-	$ObstacleTimer.start()
+	pass
 
-func show_event(event_name: String):
-	event_label.text = event_name
-	event_label.visible = true
-	$EventTimer.start()
+func show_event(_event_name: String):
+	pass
 
-func _on_ObstacleTimer_timeout():
-	obstacle_label.visible = false
+func _process(_delta):
+	if not _player:
+		return
+	var elapsed = _player.get_current_time_elapsed()
+	var score = _compute_score(elapsed)
+	_update_score_display(score, _get_high_score())
 
-func _on_EventTimer_timeout():
-	event_label.visible = false
+func _compute_score(time: float) -> int:
+	if _score_manager and _score_manager.has_method("compute_score"):
+		return _score_manager.compute_score(time)
+	return int(time) # fallback: raw elapsed time
+
+func _get_high_score() -> int:
+	# Autoload script defines high_score; direct access is safe if node exists.
+	if _score_manager:
+		return _score_manager.high_score
+	return 0
+
+func _update_score_display(score: int, high_score: int):
+	if score_label:
+		score_label.text = "Score: %d" % score
+	if high_score_label:
+		high_score_label.text = "High: %d" % high_score

@@ -21,21 +21,33 @@ func _process(delta):
 	global_transform = Transform3D(global_transform.basis, pos)
 
 func _on_body_entered(body):
+	# Only deadly for player-like body with reset_to_start
+	if body and body.has_method("reset_to_start"):
+		var gm := get_tree().root.get_node_or_null("GameManager")
+		if gm and gm.has_method("reset_level"):
+			gm.reset_level()
+		else:
+			body.reset_to_start()
+		if one_shot:
+			disable_temporarily()
+		return
+	# Fallback damage only if not player
 	if body and body.has_method("apply_obstacle_hit"):
 		body.apply_obstacle_hit(stamina_damage, momentum_loss)
 		if one_shot:
 			disable_temporarily()
 
 func disable_temporarily():
-	set_monitoring(false)
+	# Deferred to avoid physics state change during signal
+	set_deferred("monitoring", false)
 	visible = false
 	for c in get_children():
 		if c is CollisionShape3D:
-			c.disabled = true
+			c.set_deferred("disabled", true)
 
 func reset():
-	set_monitoring(true)
+	set_deferred("monitoring", true)
 	visible = true
 	for c in get_children():
 		if c is CollisionShape3D:
-			c.disabled = false
+			c.set_deferred("disabled", false)

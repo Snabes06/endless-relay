@@ -18,6 +18,8 @@ config/icon="res://icon.svg"
 [autoload]
 
 register_inputs_runtime="*res://scripts/register_inputs_runtime.gd"
+GameManager="*res://autoload/game_manager.gd"
+ScoreManager="*res://autoload/score_manager.gd"
 
 [input]
 

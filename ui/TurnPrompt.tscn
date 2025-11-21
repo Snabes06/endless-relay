@@ -1,0 +1,66 @@
+[gd_scene load_steps=4 format=3 uid="uid://bi0ivvtrnamw1"]
+
+[ext_resource type="Script" uid="uid://b2qr5fkbugait" path="res://ui/turn_prompt.gd" id="1"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6vk7r"]
+bg_color = Color(0.1882353, 0.1882353, 0.1882353, 0.7176471)
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 120
+corner_radius_top_right = 120
+corner_radius_bottom_right = 120
+corner_radius_bottom_left = 120
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_6vk7r"]
+
+[node name="TurnPrompt" type="Control"]
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -120.0
+offset_top = -120.0
+offset_right = 120.0
+offset_bottom = 120.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1")
+ring_radius = 124.0
+ring_color_bg = Color(0.16470589, 0.16470589, 0.16470589, 0.8509804)
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_6vk7r")
+
+[node name="Ring" type="ProgressBar" parent="Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/background = SubResource("StyleBoxEmpty_6vk7r")
+show_percentage = false
+
+[node name="Label" type="Label" parent="Panel/Ring"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -11.5
+offset_right = 20.0
+offset_bottom = 11.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 40
+text = "A"
+horizontal_alignment = 1

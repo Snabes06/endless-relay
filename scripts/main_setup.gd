@@ -1,5 +1,7 @@
 extends Node3D
 
+@export var debug: bool = false
+
 func _ready():
 	var cam: Camera3D = get_node_or_null("Player/Camera3D")
 	if cam == null:
@@ -21,7 +23,8 @@ func _ready():
 			pos.y = hit.get("position").y + 1.0
 			player.global_transform.origin = pos
 			player.velocity.y = 0.0
-			print("[MainSetup] Player aligned to ground at y=", pos.y)
+			if debug:
+				print("[MainSetup] Player aligned to ground at y=", pos.y)
 
 	# Ground diagnostics & fallback
 	var ground_body := get_node_or_null("GroundBody")
@@ -35,7 +38,8 @@ func _ready():
 		if not has_shape:
 			push_warning("[MainSetup] GroundBody has no collider.")
 		else:
-			print("[MainSetup] GroundBody + collider OK")
+			if debug:
+				print("[MainSetup] GroundBody + collider OK")
 
 func _input(event):
 	if event is InputEventKey and event.pressed and not event.echo:
@@ -46,8 +50,10 @@ func _input(event):
 				if side_cam.current:
 					side_cam.current = false
 					main_cam.current = true
-					print("[Camera] Switched to main camera")
+					if debug:
+						print("[Camera] Switched to main camera")
 				else:
 					main_cam.current = false
 					side_cam.current = true
-					print("[Camera] Switched to side camera")
+					if debug:
+						print("[Camera] Switched to side camera")

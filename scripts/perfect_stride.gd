@@ -16,7 +16,7 @@ func _on_body_entered(body):
 func disable_temporarily():
     visible = false
     if has_method("set_monitoring"):
-        set_monitoring(false)
+        set_deferred("monitoring", false)
     for child in get_children():
         if child is Timer:
             child.stop()
@@ -24,7 +24,7 @@ func disable_temporarily():
 func reset():
     visible = true
     if has_method("set_monitoring"):
-        set_monitoring(true)
+        set_deferred("monitoring", true)
     for child in get_children():
         if child is Timer:
             child.stop()
