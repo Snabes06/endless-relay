@@ -1,6 +1,7 @@
 extends Node
 
 var _resetting: bool = false
+var chosen_model_path: String = "" # Path to selected player model scene (FBX/TSCN)
 
 # Full level reset triggered by deadly spikes
 func reset_level():
@@ -33,3 +34,10 @@ func _schedule_reset_flag_clear():
 
 func _clear_resetting():
 	_resetting = false
+
+# --- Player model selection API ---
+func set_chosen_model_path(path: String) -> void:
+	chosen_model_path = path if path != null else ""
+
+func get_chosen_model_path() -> String:
+	return chosen_model_path

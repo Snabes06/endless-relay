@@ -5,7 +5,7 @@ extends Node3D
 @export var direction_sign: int = -1 # -1 for -Z/-X, +1 for +Z/+X (Z uses -1 by default)
 @export var obstacle_scene: PackedScene
 @export var slope_scene: PackedScene
-@export var lane_count: int = 3
+@export var lane_count: int = 6
 @export var lane_width: float = 2.0
 @export var spawn_ahead_min: float = 20.0
 @export var spawn_ahead_max: float = 40.0

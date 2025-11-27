@@ -1,9 +1,8 @@
 extends Node
 
-# Subway Surfers inspired scoring:
-# Score = int(distance * multiplier) + coins * multiplier
-# Distance measured in world units (convert as needed). Multiplier can be
-# upgraded or boosted by streak events. Coins currently unused (keep 0 until implemented).
+# Subway Surfers inspired scoring (distance-based):
+# Score = int(distance_meters * multiplier) + coins * multiplier
+# Distance measured along forward travel. Multiplier can be upgraded or boosted by streak events.
 
 var multiplier: int = 1
 var coins: int = 0
@@ -14,8 +13,9 @@ func reset_run():
 	coins = 0
 	# multiplier may persist across runs if desired; keep as-is.
 
-func compute_score(time: float) -> int:
-	score = int(time * multiplier) + coins * multiplier
+func compute_score(distance_units: float) -> int:
+	# Treat 1 world unit as 1 point by default; tweak with a scalar if desired.
+	score = int(distance_units * multiplier) + coins * multiplier
 	if score > high_score:
 		high_score = score
 	return score

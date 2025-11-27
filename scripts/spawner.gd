@@ -8,7 +8,7 @@ extends Node3D
 @export var perfect_scene: PackedScene
 @export var spawn_interval := 1.4
 @export var spawn_distance := 30.0
-@export var lanes := 3
+@export var lanes := 6
 @export var lane_width := 2.0
 @export var initial_spawn_count := 6
 @export var pool_size := 10

@@ -5,7 +5,7 @@ extends Node3D
 @export var length_z: float = 60.0
 @export var width_x: float = 6.0
 @export var base_y: float = 0.0
-@export var lane_count: int = 3
+@export var lane_count: int = 6
 @export var lane_width: float = 2.0
 @export var subdivisions_z: int = 60
 @export var subdivisions_x: int = 12
@@ -83,8 +83,10 @@ func _regenerate():
 	for zi in range(subdivisions_z + 1):
 		var z_local = - (length_z * (float(zi) / float(subdivisions_z)))
 		var z_world = start_z + z_local
+		# Ensure terrain width covers all lanes; use effective width at least lane_count * lane_width
+		var effective_width: float = max(width_x, lane_width * float(lane_count))
 		for xi in range(subdivisions_x + 1):
-			var x_local = width_x * ((float(xi) / float(subdivisions_x)) - 0.5)
+			var x_local = effective_width * ((float(xi) / float(subdivisions_x)) - 0.5)
 			var x_world = x_local # world x unaffected by segment origin aside from transform
 			var y = world_height(x_world, z_world)
 			verts.append(Vector3(x_local, y, z_local))

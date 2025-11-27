@@ -1,0 +1,16 @@
+[gd_resource type="ShaderMaterial" load_steps=3 format=3]
+
+[ext_resource type="Shader" path="res://resources/shaders/cel_toon.gdshader" id="1"]
+[ext_resource type="Material" path="res://resources/materials/cel_outline_material.tres" id="2"]
+
+[resource]
+shader = ExtResource("1")
+next_pass = ExtResource("2")
+shader_parameter/albedo_color = Color(0.95, 0.95, 0.95, 1)
+shader_parameter/toon_steps = 4
+shader_parameter/min_light = 0.12
+shader_parameter/specular_intensity = 0.25
+shader_parameter/specular_size = 0.35
+shader_parameter/specular_quantize = true
+shader_parameter/rim_intensity = 0.2
+shader_parameter/rim_power = 2.0

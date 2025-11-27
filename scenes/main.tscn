@@ -1,6 +1,6 @@
-[gd_scene load_steps=19 format=3 uid="uid://c4bubxyahvvy7"]
+[gd_scene load_steps=18 format=3 uid="uid://c4bubxyahvvy7"]
 
-[ext_resource type="PackedScene" path="res://scenes/player.tscn" id="1"]
+[ext_resource type="PackedScene" uid="uid://e46m7i1hag6m" path="res://scenes/player.tscn" id="1"]
 [ext_resource type="Script" uid="uid://csxd2brmr8wu3" path="res://scripts/main_setup.gd" id="13"]
 [ext_resource type="Script" uid="uid://dug45p6fgx63w" path="res://scripts/follow_camera.gd" id="14"]
 [ext_resource type="Script" uid="uid://e57w5ki7sbe" path="res://scripts/side_camera.gd" id="21"]
@@ -8,8 +8,10 @@
 [ext_resource type="PackedScene" path="res://scenes/slope.tscn" id="41"]
 [ext_resource type="Script" uid="uid://d14as1nf03nlk" path="res://scripts/proc_manager.gd" id="42"]
 [ext_resource type="Script" uid="uid://b8oyefo2a06jh" path="res://scripts/infinite_ground_simple.gd" id="43"]
-[ext_resource type="PackedScene" path="res://ui/HUD.tscn" id="50"]
+[ext_resource type="PackedScene" uid="uid://cf0jc1n1re4a7" path="res://ui/HUD.tscn" id="50"]
 [ext_resource type="PackedScene" path="res://scenes/turn_trigger.tscn" id="60"]
+[ext_resource type="Script" uid="uid://d30lrxqkypmeh" path="res://scripts/decoration_manager.gd" id="70"]
+[ext_resource type="Material" path="res://resources/materials/cel_toon_material.tres" id="71"]
 
 [sub_resource type="PhysicalSkyMaterial" id="10"]
 
@@ -22,20 +24,11 @@ background_color = Color(0.4, 0.7, 1, 1)
 sky = SubResource("11")
 ambient_light_color = Color(0.5, 0.5, 0.5, 1)
 
-[sub_resource type="StandardMaterial3D" id="30"]
-albedo_color = Color(0.22, 0.55, 0.28, 1)
-
 [sub_resource type="BoxMesh" id="20"]
 size = Vector3(40, 1, 2000)
 
 [sub_resource type="BoxShape3D" id="21"]
 size = Vector3(40, 1, 2000)
-
-[sub_resource type="BoxMesh" id="22"]
-size = Vector3(2000, 1, 40)
-
-[sub_resource type="BoxShape3D" id="23"]
-size = Vector3(2000, 1, 40)
 
 [node name="Main" type="Node3D"]
 script = ExtResource("13")
@@ -52,11 +45,13 @@ script = ExtResource("14")
 environment = SubResource("12")
 
 [node name="Sun" type="DirectionalLight3D" parent="."]
-transform = Transform3D(0.965926, -0.183013, -0.183013, 0, 0.866025, -0.5, 0.258819, 0.464977, 0.84641, -8, 10, 8)
-light_energy = 1.2
+transform = Transform3D(0.9516424, -0.13628016, -0.27532607, 0.28266597, -0.16051635, 0.97644275, -0.2372452, -0.9372129, -0.12365124, -8, 10, 8)
+light_color = Color(1, 0.96, 0.9, 1)
+light_energy = 1.15
+light_indirect_energy = 1.1
 shadow_enabled = true
-shadow_bias = 0.02
-shadow_normal_bias = 0.8
+shadow_bias = 0.03
+shadow_normal_bias = 0.5
 
 [node name="DebugSideCam" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 6, 0)
@@ -68,20 +63,21 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, 0)
 script = ExtResource("43")
 
 [node name="GroundMesh" type="MeshInstance3D" parent="GroundBody"]
-material_override = SubResource("30")
+material_override = ExtResource("71")
 mesh = SubResource("20")
 
 [node name="GroundCollider" type="CollisionShape3D" parent="GroundBody"]
 shape = SubResource("21")
-
 
 [node name="ProcManager" type="Node3D" parent="."]
 script = ExtResource("42")
 obstacle_scene = ExtResource("40")
 slope_scene = ExtResource("41")
 turn_trigger_scene = ExtResource("60")
-turn_trigger_chance = 0.04
-turn_trigger_min_gap = 120.0
 
 [node name="HUD" parent="." instance=ExtResource("50")]
 
+[node name="DecorationManager" type="Node3D" parent="."]
+script = ExtResource("70")
+min_scale = 0.85
+max_scale = 1.35

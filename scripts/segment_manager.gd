@@ -3,7 +3,7 @@ extends Node3D
 @export var segment_scene: PackedScene
 @export var initial_segments: int = 6
 @export var segment_length: float = 40.0
-@export var lane_count: int = 3
+@export var lane_count: int = 6
 @export var recycle_buffer: float = 20.0
 @export var player_path: NodePath = NodePath("../Player")
 @export var spawn_front_offset: float = 5.0

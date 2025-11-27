@@ -59,10 +59,10 @@ func refresh_hint():
 			if key_evt.keycode != KEY_NONE:
 				display_key = OS.get_keycode_string(key_evt.keycode)
 				break
-	# Update hint label if present
-	var hint := get_node_or_null("Hint")
-	if hint and hint is Label:
-		(hint as Label).text = "Press: " + display_key
+	# Update label if present
+	var label := get_node_or_null("Key")
+	if label and label is Label:
+		(label as Label).text = display_key.to_upper()
 
 func set_input_action(action: StringName):
 	input_action = action

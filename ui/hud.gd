@@ -41,14 +41,19 @@ func show_event(_event_name: String):
 func _process(_delta):
 	if not _player:
 		return
-	var elapsed = _player.get_current_time_elapsed()
-	var score = _compute_score(elapsed)
+	var _elapsed = _player.get_current_time_elapsed()
+	# Distance along -Z since start (player moves toward negative Z)
+	var current_z = _player.global_transform.origin.z
+	var distance = (_start_z - current_z)
+	if distance < 0:
+		distance = 0
+	var score = _compute_score(distance)
 	_update_score_display(score, _get_high_score())
 
-func _compute_score(time: float) -> int:
+func _compute_score(distance: float) -> int:
 	if _score_manager and _score_manager.has_method("compute_score"):
-		return _score_manager.compute_score(time)
-	return int(time) # fallback: raw elapsed time
+		return _score_manager.compute_score(distance)
+	return int(distance) # fallback
 
 func _get_high_score() -> int:
 	# Autoload script defines high_score; direct access is safe if node exists.
