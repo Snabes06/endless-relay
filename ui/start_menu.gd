@@ -2,7 +2,6 @@ extends Node3D
 
 var selection_index: int = 0
 var selections: Array[String] = ["Apatosaurus", "Stegosaurus", "Triceratops", "Trex", "Parasaurolophus", "Velociraptor"]
-# Map selection names to resource paths (fbx models)
 const MODEL_PATHS := {
 	"Apatosaurus": "res://resources/FBX/Apatosaurus.fbx",
 	"Stegosaurus": "res://resources/FBX/Stegosaurus.fbx",
@@ -12,8 +11,9 @@ const MODEL_PATHS := {
 	"Velociraptor": "res://resources/FBX/Velociraptor.fbx"
 }
 
-@onready var pick_button: Button = $Background/MarginContainer2/HBoxContainer/Panel/Button
+@onready var pick_label: Label = $Background/MarginContainer2/HBoxContainer/Panel/Label
 @onready var display_holder: Node3D = $Background/MarginContainer2/HBoxContainer/Panel/DisplayAnimal
+@onready var spot_light: Node3D = $Background/MarginContainer2/HBoxContainer/Panel/SpotLight3D
 
 func _on_start_pressed() -> void:
 	var tree := get_tree()
@@ -51,10 +51,11 @@ func _on_pick_pressed() -> void:
 func _ready() -> void:
 	_update_selection_label()
 	_refresh_display_model()
+	_aim_spotlight()
 
 func _update_selection_label() -> void:
-	if pick_button:
-		pick_button.text = selections[selection_index]
+	if pick_label:
+		pick_label.text = selections[selection_index]
 
 func _refresh_display_model() -> void:
 	if not display_holder:
@@ -92,6 +93,17 @@ func _refresh_display_model() -> void:
 		if abs(r.y) < 0.1:
 			r.y = 180.0
 		(inst as Node3D).rotation_degrees = r
+	_aim_spotlight()
+
+func _aim_spotlight() -> void:
+	if not spot_light or not display_holder:
+		return
+	var target: Vector3 = display_holder.global_transform.origin
+	# Avoid degenerate look_at if coincident; slightly offset target up if identical
+	if spot_light.global_transform.origin.distance_to(target) < 0.001:
+		target.y += 0.5
+	# Ensure the light points at the target (in Godot, -Z is forward)
+	spot_light.look_at(target, Vector3.UP)
 
 func _process(delta: float) -> void:
 	_rotate_display(delta)

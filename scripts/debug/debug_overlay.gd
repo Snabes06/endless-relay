@@ -84,7 +84,6 @@ func _process(_delta):
 	var pool_nodes = []
 	if _current_scene:
 		for n in _current_scene.get_children():
-			# check children and grandchildren for ObjectPool instances
 			for c in n.get_children():
 				if c.has_method("get_pool_count"):
 					pool_nodes.append(c)

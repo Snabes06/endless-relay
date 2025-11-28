@@ -3,13 +3,12 @@ extends CharacterBody3D
 @export var base_speed: float = 8.0
 @export var max_speed: float = 22.0
 @export var speed_accel_per_sec: float = 0.18 # linear acceleration term
-@export var accel_curve_power: float = 1.0 # 1 = linear, <1 fast early, >1 slow early
+@export var accel_curve_power: float = 1.0 # accel curve
 @export var gravity: float = -24.0
 @export var jump_speed: float = 8.5
 @export var lane_count: int = 6
 @export var lane_width: float = 2.0
 @export var lateral_speed: float = 12.0
-@export var turn_duration: float = 0.0 # no blend; kept for potential future use
 
 # Visual model and animation
 @export var model_scene: PackedScene = preload("res://resources/FBX/Apatosaurus.fbx")
@@ -134,30 +133,10 @@ func _physics_process(delta: float):
 		var idxf = cx / lane_width + _lane_center
 		current_lane = clamp(int(round(idxf)), 0, lane_count - 1)
 
-
-func _input(event):
-	if event is InputEventKey and event.pressed and not event.echo:
-		# Discrete lane nudges not used in continuous mode; ignore key events
-		pass
-
-func move_left():
-	# Continuous mode: no discrete lane step
-	pass
-
-func move_right():
-	# Continuous mode: no discrete lane step
-	pass
-
 func is_performing_action(action_name: String) -> bool:
 	if action_name == "jump":
 		return not is_on_floor()
 	return false
-
-func set_terrain_mod(_speed_mod: float, _stamina_mult_in: float):
-	pass
-
-func reset_terrain_mod():
-	pass
 
 # Called by deadly obstacles (spikes) to send player back to start
 func reset_to_start():
@@ -176,32 +155,20 @@ func reset_to_start():
 	turned_x = false
 	turn_x_sign = 0
 
-func start_turn_left():
-	# Turn mechanic disabled: ignore requests
-	turned_x = false
-	turn_x_sign = 0
-
-func start_turn_right():
-	# Turn mechanic disabled: ignore requests
-	turned_x = false
-	turn_x_sign = 0
-
-# Removed angle helper functions (not needed for instant turn)
-
 func _compute_forward_speed() -> float:
-	# Subway Surfers style: speed increases over time, capped; multiplier can raise cap.
+	# Current multiplier
 	var mult := 1
-	# Direct property access; ScoreManager defines 'multiplier'. Remove invalid has_variable usage.
 	if _score_manager:
 		mult = _score_manager.multiplier
 	var max_cap = max_speed + (mult - 1) * 0.8
 	var inc = speed_accel_per_sec * pow(_elapsed, accel_curve_power)
 	return clamp(base_speed + inc, base_speed, max_cap)
 
-
+# Speed api; get
 func get_current_speed() -> float:
 	return _compute_forward_speed()
 
+# Elapsed time api; get
 func get_current_time_elapsed() -> float:
 	return _elapsed
 

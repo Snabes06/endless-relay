@@ -6,11 +6,8 @@ extends Camera3D
 @export var look_offset: Vector3 = Vector3(0, 1, 0)
 @export var smooth_speed: float = 8.0
 @export var reorient_duration: float = 0.6
-@export var debug: bool = false
-@export var debug_interval: float = 1.0
 
 var _target: Node3D = null
-var _t_accum := 0.0
 var _initialized := false
 var _last_x_mode: bool = false
 var _blend_t: float = 1.0
@@ -24,9 +21,7 @@ func _ready():
 		push_warning("FollowCamera: target not found at path " + str(target_path))
 	set_process(true)
 	_initialized = true
-	if debug:
-		print("[FollowCamera] ready; cam pos=", global_transform.origin)
-	# Ensure clip planes are reasonable
+	# Clipping boundries
 	near = 0.05
 	far = 4000.0
 
@@ -52,7 +47,7 @@ func _process(delta):
 				turn_sign = int(sign(float(ts)))
 			_:
 				turn_sign = 0
-
+				
 	# Handle smooth reorientation when mode changes
 	if x_mode != _last_x_mode:
 		_last_x_mode = x_mode
@@ -74,12 +69,6 @@ func _process(delta):
 	var fwd = -global_transform.basis.z
 	if fwd.dot(to_target) < 0.1:
 		look_at(_target.global_transform.origin + look_offset, Vector3.UP)
-	if debug:
-		_t_accum += delta
-		if _t_accum >= debug_interval:
-			_t_accum = 0.0
-			print("[FollowCamera] cam=", global_transform.origin, " target=", _target.global_transform.origin, " fwd=", fwd, " x_mode=", x_mode)
-
 
 func _current_offset(turn_sign: int) -> Vector3:
 	if _blend_t < 1.0:
@@ -94,7 +83,6 @@ func _current_offset(turn_sign: int) -> Vector3:
 
 func _apply_sign(base: Vector3, turn_sign: int) -> Vector3:
 	# When travelling along X axis, ensure camera offset is "behind" player relative to forward direction.
-	# Forward vector is (turn_sign,0,0). Behind is (-turn_sign,0,0).
 	if _last_x_mode and turn_sign != 0:
 		var dist: float = abs(base.x)
 		return Vector3(-turn_sign * dist, base.y, base.z)
