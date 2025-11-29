@@ -2,6 +2,7 @@ extends Node3D
 
 @export var player_path: NodePath = NodePath("../Player")
 @export var auto_load_from_folder: bool = true
+@export var use_runtime_scan: bool = true # toggle runtime folder scan; disable for deterministic exports
 @export var folder_path: String = "res://resources/LowPoly Environment Pack"
 @export var prop_scenes: Array[PackedScene] = []
 @export var exclude_name_contains: Array[String] = ["mount", "terrain", "environment", "mud"] # skip large/occluding meshes or muddy ground chunks
@@ -37,12 +38,47 @@ var _spawned: Array[Node3D] = []
 var _grass_scenes: Array[PackedScene] = []
 var _grass_count: int = 0
 
+# Explicit preloads (excluding names containing exclude_name_contains keywords) to ensure export inclusion
+const PRELOADED_PROP_SCENES: Array[PackedScene] = [
+	preload("res://resources/LowPoly Environment Pack/Bush_1.fbx"),
+	preload("res://resources/LowPoly Environment Pack/Bush_2.fbx"),
+	preload("res://resources/LowPoly Environment Pack/Bush_3.fbx"),
+	preload("res://resources/LowPoly Environment Pack/Grass_1.fbx"),
+	preload("res://resources/LowPoly Environment Pack/Grass_2.fbx"),
+	preload("res://resources/LowPoly Environment Pack/Log_1.fbx"),
+	preload("res://resources/LowPoly Environment Pack/Log_2.fbx"),
+	preload("res://resources/LowPoly Environment Pack/Log_3.fbx"),
+	preload("res://resources/LowPoly Environment Pack/Plant_1.fbx"),
+	preload("res://resources/LowPoly Environment Pack/Plant_2.fbx"),
+	preload("res://resources/LowPoly Environment Pack/Plant_3.fbx"),
+	preload("res://resources/LowPoly Environment Pack/Plant_4.fbx"),
+	preload("res://resources/LowPoly Environment Pack/Plant_5.fbx"),
+	preload("res://resources/LowPoly Environment Pack/Plant_6.fbx"),
+	preload("res://resources/LowPoly Environment Pack/Plant_7.fbx"),
+	preload("res://resources/LowPoly Environment Pack/Rock_1.fbx"),
+	preload("res://resources/LowPoly Environment Pack/Rock_2.fbx"),
+	preload("res://resources/LowPoly Environment Pack/Rock_3.fbx"),
+	preload("res://resources/LowPoly Environment Pack/Rock_4.fbx"),
+	preload("res://resources/LowPoly Environment Pack/Rock_5.fbx"),
+	preload("res://resources/LowPoly Environment Pack/Rock_6.fbx"),
+	preload("res://resources/LowPoly Environment Pack/Stone_1.fbx"),
+	preload("res://resources/LowPoly Environment Pack/Tree_1.fbx"),
+	preload("res://resources/LowPoly Environment Pack/Tree_2.fbx"),
+	preload("res://resources/LowPoly Environment Pack/Tree_3.fbx"),
+]
+
 func _ready():
 	_player = get_node_or_null(player_path)
 	if not _player:
 		push_warning("DecorationManager: player not found")
-	if auto_load_from_folder and prop_scenes.is_empty():
+	# Optional runtime scan (may fail in export if assets stripped). If disabled, rely on manually populated prop_scenes.
+	if use_runtime_scan and auto_load_from_folder and prop_scenes.is_empty():
 		_load_props_from_folder(folder_path)
+	# Fallback: if still empty, append explicit preloaded scenes
+	if prop_scenes.is_empty():
+		for sc in PRELOADED_PROP_SCENES:
+			if sc and sc is PackedScene:
+				prop_scenes.append(sc)
 	# Build grass subset from loaded props
 	_grass_scenes.clear()
 	for sc in prop_scenes:
@@ -122,8 +158,11 @@ func _load_props_from_folder(path: String) -> void:
 	var file_name = d.get_next()
 	while file_name != "":
 		if not d.current_is_dir():
-			if file_name.to_lower().ends_with(".fbx") or file_name.to_lower().ends_with(".tscn"):
-				var lower = file_name.to_lower()
+			var lower = file_name.to_lower()
+			# Accept common 3D scene file types; FBX imports are handled by loading the .fbx directly.
+			var is_scene_file := lower.ends_with(".fbx") or lower.ends_with(".glb") or lower.ends_with(".tscn")
+			# Skip purely .import metadata files unless original exists (original already caught by .fbx/.glb check)
+			if is_scene_file:
 				var skip := false
 				for kw in exclude_name_contains:
 					if lower.find(kw.to_lower()) != -1:
@@ -137,7 +176,7 @@ func _load_props_from_folder(path: String) -> void:
 		file_name = d.get_next()
 	d.list_dir_end()
 	if debug:
-		print("[DecorationManager] loaded props:", prop_scenes.size())
+		print("[DecorationManager] loaded props:", prop_scenes.size(), "from", path)
 
 func _get_player_z() -> float:
 	return _player.global_transform.origin.z

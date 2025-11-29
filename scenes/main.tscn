@@ -10,7 +10,7 @@
 [ext_resource type="Script" uid="uid://b8oyefo2a06jh" path="res://scripts/infinite_ground_simple.gd" id="43"]
 [ext_resource type="PackedScene" uid="uid://cf0jc1n1re4a7" path="res://ui/HUD.tscn" id="50"]
 [ext_resource type="PackedScene" path="res://scenes/turn_trigger.tscn" id="60"]
-[ext_resource type="Script" path="res://scripts/decoration_manager.gd" id="70"]
+[ext_resource type="Script" uid="uid://d30lrxqkypmeh" path="res://scripts/decoration_manager.gd" id="70"]
 [ext_resource type="Material" path="res://resources/materials/cel_toon_material.tres" id="71"]
 
 [sub_resource type="FogMaterial" id="30"]
