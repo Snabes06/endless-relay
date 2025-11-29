@@ -34,6 +34,11 @@ var _model_holder: Node3D = null
 var _anim_player: AnimationPlayer = null
 var _current_anim: String = ""
 
+# Temporary speed boost mechanics (adds to computed forward speed)
+@export var boost_decay_per_sec: float = 3.0
+var _speed_boost: float = 0.0
+var _max_extra_boost: float = 14.0
+
 func _ready():
 	floor_snap_length = 0.6
 	_lane_center = float(lane_count - 1) / 2.0
@@ -112,6 +117,10 @@ func _physics_process(delta: float):
 		velocity.z = lateral_v
 	move_and_slide()
 
+	# Decay temporary speed boost
+	if _speed_boost > 0.0:
+		_speed_boost = max(0.0, _speed_boost - boost_decay_per_sec * delta)
+
 	# Animation selection
 	if _anim_player:
 		var on_floor = is_on_floor()
@@ -162,7 +171,7 @@ func _compute_forward_speed() -> float:
 		mult = _score_manager.multiplier
 	var max_cap = max_speed + (mult - 1) * 0.8
 	var inc = speed_accel_per_sec * pow(_elapsed, accel_curve_power)
-	return clamp(base_speed + inc, base_speed, max_cap)
+	return clamp(base_speed + inc + _speed_boost, base_speed, max_cap + _max_extra_boost)
 
 # Speed api; get
 func get_current_speed() -> float:
@@ -212,3 +221,8 @@ func _set_anim_loop_mode(anim_name: String, loop: bool) -> void:
 	var anim: Animation = _anim_player.get_animation(anim_name)
 	if anim:
 		anim.loop_mode = Animation.LOOP_LINEAR if loop else Animation.LOOP_NONE
+
+# External hooks from game objects to grant a short speed boost (and optional stamina)
+func apply_perfect_stride(_stamina_reward: float, momentum_reward: float) -> void:
+	# Stamina not modeled; momentum_reward converted to temporary speed boost
+	_speed_boost = clamp(_speed_boost + float(momentum_reward), 0.0, _max_extra_boost)

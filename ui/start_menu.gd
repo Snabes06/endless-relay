@@ -21,7 +21,19 @@ func _on_start_pressed() -> void:
 		tree.change_scene_to_file("res://scenes/main.tscn")
 
 func _on_settings_pressed() -> void:
-	print("Settings pressed (TODO: implement settings menu)")
+	_show_tutorial()
+func _on_tutorial_pressed() -> void:
+	_show_tutorial()
+
+func _on_tutorial_close_pressed() -> void:
+	var p := get_node_or_null("Background/TutorialPanel")
+	if p:
+		p.visible = false
+
+func _show_tutorial() -> void:
+	var p := get_node_or_null("Background/TutorialPanel")
+	if p:
+		p.visible = true
 
 func _on_exit_pressed() -> void:
 	get_tree().quit()

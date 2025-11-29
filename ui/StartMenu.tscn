@@ -145,13 +145,13 @@ theme_override_font_sizes/font_size = 32
 action_mode = 0
 text = "Start"
 
-[node name="Settings" type="Button" parent="Background/Panel/MarginContainer/ButtonContainer"]
+[node name="Tutorial" type="Button" parent="Background/Panel/MarginContainer/ButtonContainer"]
 custom_minimum_size = Vector2(100, 55)
 layout_mode = 2
 theme_override_constants/outline_size = 8
 theme_override_font_sizes/font_size = 32
 action_mode = 0
-text = "Settings"
+text = "Tutorial"
 
 [node name="Exit" type="Button" parent="Background/Panel/MarginContainer/ButtonContainer"]
 custom_minimum_size = Vector2(100, 55)
@@ -167,9 +167,44 @@ theme_override_constants/outline_size = 5
 text = "Version 1.0"
 horizontal_alignment = 2
 
+[node name="TutorialPanel" type="Panel" parent="Background"]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -300.0
+offset_top = -220.0
+offset_right = 300.0
+offset_bottom = 220.0
+
+[node name="VBox" type="VBoxContainer" parent="Background/TutorialPanel"]
+layout_mode = 0
+offset_left = 14.0
+offset_top = 14.0
+offset_right = 586.0
+offset_bottom = 426.0
+
+[node name="Title" type="Label" parent="Background/TutorialPanel/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Tutorial"
+
+[node name="Controls" type="RichTextLabel" parent="Background/TutorialPanel/VBox"]
+layout_mode = 2
+fit_content = true
+text = "Controls:\n- A: Move left\n- E: Move right\n- W: Jump\n\nTips:\n- Cactuses are dangerous and cause death\n- Slopes provide a speed boost when you go off them"
+
+[node name="CloseButton" type="Button" parent="Background/TutorialPanel/VBox"]
+layout_mode = 2
+text = "Close"
+
 [connection signal="pressed" from="Background/MarginContainer2/HBoxContainer/Button" to="." method="_on_left_pressed"]
 [connection signal="pressed" from="Background/MarginContainer2/HBoxContainer/Panel/Button" to="." method="_on_pick_pressed"]
 [connection signal="pressed" from="Background/MarginContainer2/HBoxContainer/Button2" to="." method="_on_right_pressed"]
 [connection signal="pressed" from="Background/Panel/MarginContainer/ButtonContainer/Start" to="." method="_on_start_pressed"]
-[connection signal="pressed" from="Background/Panel/MarginContainer/ButtonContainer/Settings" to="." method="_on_settings_pressed"]
+[connection signal="pressed" from="Background/Panel/MarginContainer/ButtonContainer/Tutorial" to="." method="_on_tutorial_pressed"]
 [connection signal="pressed" from="Background/Panel/MarginContainer/ButtonContainer/Exit" to="." method="_on_exit_pressed"]
+[connection signal="pressed" from="Background/TutorialPanel/VBox/CloseButton" to="." method="_on_tutorial_close_pressed"]
