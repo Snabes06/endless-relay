@@ -9,8 +9,15 @@ extends Area3D
 var _t := 0.0
 var _start_x := 0.0
 
+# Visual model settings
+const CACTUS_SCENE_PATH := "res://resources/Prickly pear cactus.glb"
+@export var model_scene_path: String = CACTUS_SCENE_PATH
+@export var model_scale: Vector3 = Vector3(0.7, 0.7, 0.7)
+@export var model_offset: Vector3 = Vector3(0, 0.2, 0)
+
 func _ready():
 	_start_x = global_transform.origin.x
+	_setup_visual()
 	connect("body_entered", Callable(self, "_on_body_entered"))
 
 func _process(delta):
@@ -51,3 +58,74 @@ func reset():
 	for c in get_children():
 		if c is CollisionShape3D:
 			c.set_deferred("disabled", false)
+	_randomize_yaw()
+
+# --- Visual setup ---
+func _setup_visual() -> void:
+	var holder: Node3D = null
+	var existing := get_node_or_null("Visual")
+	if existing and existing is Node3D and not (existing is MeshInstance3D):
+		holder = existing
+	else:
+		if existing and existing is MeshInstance3D:
+			remove_child(existing)
+			existing.queue_free()
+		holder = Node3D.new()
+		holder.name = "Visual"
+		add_child(holder)
+	for c in holder.get_children():
+		c.queue_free()
+	var res = load(model_scene_path)
+	if res is PackedScene:
+		var inst = res.instantiate()
+		holder.add_child(inst)
+	holder.scale = model_scale
+	holder.position = model_offset
+	_randomize_yaw()
+	_fit_visual_to_ground(holder)
+
+func _randomize_yaw() -> void:
+	var holder: Node3D = get_node_or_null("Visual")
+	if holder and holder is Node3D:
+		var y = randf() * 360.0
+		var r = holder.rotation_degrees
+		r.y = y
+		holder.rotation_degrees = r
+
+func _fit_visual_to_ground(holder: Node3D) -> void:
+	if holder == null:
+		return
+	var result := _compute_visual_bottom(holder)
+	if result.get("has", false):
+		var bottom := float(result["bottom"])
+		holder.position.y += -bottom + 0.02
+
+func _compute_visual_bottom(holder: Node3D) -> Dictionary:
+	var state := {
+		"has": false,
+		"bottom": 0.0
+	}
+	var start_xf := Transform3D(Basis().scaled(holder.scale), Vector3.ZERO)
+	for c in holder.get_children():
+		_compute_bottom_recursive(c, start_xf, state)
+	return state
+
+func _compute_bottom_recursive(n: Node, xf: Transform3D, state: Dictionary) -> void:
+	if not (n is Node3D):
+		return
+	var nx := xf * (n as Node3D).transform
+	if n is MeshInstance3D:
+		var aabb: AABB = (n as MeshInstance3D).get_aabb()
+		var min_y := INF
+		for i in range(8):
+			var corner := aabb.get_endpoint(i)
+			var world := nx * corner
+			if world.y < min_y:
+				min_y = world.y
+		if not state["has"]:
+			state["bottom"] = min_y
+			state["has"] = true
+		else:
+			state["bottom"] = min(state["bottom"], min_y)
+	for c in n.get_children():
+		_compute_bottom_recursive(c, nx, state)

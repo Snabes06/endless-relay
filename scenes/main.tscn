@@ -1,6 +1,6 @@
-[gd_scene load_steps=18 format=3 uid="uid://c4bubxyahvvy7"]
+[gd_scene load_steps=19 format=3 uid="uid://c4bubxyahvvy7"]
 
-[ext_resource type="PackedScene" uid="uid://e46m7i1hag6m" path="res://scenes/player.tscn" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/player.tscn" id="1"]
 [ext_resource type="Script" uid="uid://csxd2brmr8wu3" path="res://scripts/main_setup.gd" id="13"]
 [ext_resource type="Script" uid="uid://dug45p6fgx63w" path="res://scripts/follow_camera.gd" id="14"]
 [ext_resource type="Script" uid="uid://e57w5ki7sbe" path="res://scripts/side_camera.gd" id="21"]
@@ -10,7 +10,7 @@
 [ext_resource type="Script" uid="uid://b8oyefo2a06jh" path="res://scripts/infinite_ground_simple.gd" id="43"]
 [ext_resource type="PackedScene" uid="uid://cf0jc1n1re4a7" path="res://ui/HUD.tscn" id="50"]
 [ext_resource type="PackedScene" path="res://scenes/turn_trigger.tscn" id="60"]
-[ext_resource type="Script" uid="uid://d30lrxqkypmeh" path="res://scripts/decoration_manager.gd" id="70"]
+[ext_resource type="Script" path="res://scripts/decoration_manager.gd" id="70"]
 [ext_resource type="Material" path="res://resources/materials/cel_toon_material.tres" id="71"]
 
 [sub_resource type="PhysicalSkyMaterial" id="10"]
@@ -23,12 +23,33 @@ background_mode = 1
 background_color = Color(0.4, 0.7, 1, 1)
 sky = SubResource("11")
 ambient_light_color = Color(0.5, 0.5, 0.5, 1)
+fog_enabled = true
+fog_color = Color(0.75, 0.85, 1, 1)
+fog_density = 0.065
+fog_sky_affect = 0.55
+fog_depth_curve = 1.3
+fog_depth_begin = 15.0
+fog_height_enabled = true
+fog_height_min = -1.0
+fog_height_max = 2.5
+
+# Enable volumetric fog so FogVolume is visible
+volumetric_fog_enabled = true
+volumetric_fog_density = 0.05
+volumetric_fog_sky_affect = 0.6
+volumetric_fog_ambient_inject = 0.2
+volumetric_fog_length = 64.0
 
 [sub_resource type="BoxMesh" id="20"]
 size = Vector3(40, 1, 2000)
 
 [sub_resource type="BoxShape3D" id="21"]
 size = Vector3(40, 1, 2000)
+
+[sub_resource type="FogMaterial" id="30"]
+density = 0.085
+albedo = Color(0.85, 0.9, 1, 1)
+edge_fade = 0.4
 
 [node name="Main" type="Node3D"]
 script = ExtResource("13")
@@ -81,3 +102,8 @@ turn_trigger_scene = ExtResource("60")
 script = ExtResource("70")
 min_scale = 0.85
 max_scale = 1.35
+
+[node name="SurroundFog" type="FogVolume" parent="Camera3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+size = Vector3(120, 10, 160)
+material = SubResource("30")

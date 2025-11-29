@@ -5,19 +5,26 @@ extends Area3D
 @export var one_shot := true
 @export var required_action := "" # "jump", "slide", "vault" or empty for no specific action
 
+# Visual model settings
+const CACTUS_SCENE_PATH := "res://resources/Prickly pear cactus.glb"
+@export var model_scene_path: String = CACTUS_SCENE_PATH
+@export var model_scale: Vector3 = Vector3(0.7, 0.7, 0.7)
+@export var model_offset: Vector3 = Vector3(0, 0.2, 0)
+
 var _disabled := false
 
 func _ready():
+	_setup_visual()
 	connect("body_entered", Callable(self, "_on_body_entered"))
 
 func _on_body_entered(body):
 	if not body:
 		return
-	var bname = ""
+	var _bname = ""
 	if body.has_method("get_name"):
-		bname = body.get_name()
+		_bname = body.get_name()
 	else:
-		bname = str(body)
+		_bname = str(body)
 	# Debug print removed for production cleanliness
 	# If an action is required to avoid the obstacle, ask the body if it's performing it
 	if required_action != "" and body.has_method("is_performing_action"):
@@ -29,14 +36,14 @@ func _on_body_entered(body):
 			if one_shot:
 				disable_temporarily()
 			return
-	# Deadly spike behavior: reset player to start instead of applying damage
-	# Now triggers full level reload via GameManager if available
+	# Deadly spike behavior: trigger death flow via GameManager when available
 	# Only treat as deadly if collider looks like the player (has reset_to_start)
 	if body.has_method("reset_to_start"):
 		var gm := get_tree().root.get_node_or_null("GameManager")
-		if gm and gm.has_method("reset_level"):
-			gm.reset_level()
+		if gm and gm.has_method("notify_player_died"):
+			gm.notify_player_died()
 		else:
+			# Fallback to old behavior if no GameManager death flow
 			body.reset_to_start()
 		if one_shot:
 			disable_temporarily()
@@ -71,3 +78,76 @@ func reset():
 			child.set_deferred("disabled", false)
 		if child is Timer:
 			child.stop()
+	# Re-roll random Y rotation on reuse
+	_randomize_yaw()
+
+# --- Visual setup ---
+func _setup_visual() -> void:
+	var holder: Node3D = null
+	var existing := get_node_or_null("Visual")
+	if existing and existing is Node3D and not (existing is MeshInstance3D):
+		holder = existing
+	else:
+		if existing and existing is MeshInstance3D:
+			remove_child(existing)
+			existing.queue_free()
+		holder = Node3D.new()
+		holder.name = "Visual"
+		add_child(holder)
+	# Clear old children
+	for c in holder.get_children():
+		c.queue_free()
+	var res = load(model_scene_path)
+	if res is PackedScene:
+		var inst = res.instantiate()
+		holder.add_child(inst)
+	holder.scale = model_scale
+	holder.position = model_offset
+	_randomize_yaw()
+	_fit_visual_to_ground(holder)
+
+func _randomize_yaw() -> void:
+	var holder: Node3D = get_node_or_null("Visual")
+	if holder and holder is Node3D:
+		var y = randf() * 360.0
+		var r = holder.rotation_degrees
+		r.y = y
+		holder.rotation_degrees = r
+
+func _fit_visual_to_ground(holder: Node3D) -> void:
+	if holder == null:
+		return
+	var result := _compute_visual_bottom(holder)
+	if result.get("has", false):
+		var bottom := float(result["bottom"])
+		holder.position.y += -bottom + 0.02
+
+func _compute_visual_bottom(holder: Node3D) -> Dictionary:
+	var state := {
+		"has": false,
+		"bottom": 0.0
+	}
+	var start_xf := Transform3D(Basis().scaled(holder.scale), Vector3.ZERO)
+	for c in holder.get_children():
+		_compute_bottom_recursive(c, start_xf, state)
+	return state
+
+func _compute_bottom_recursive(n: Node, xf: Transform3D, state: Dictionary) -> void:
+	if not (n is Node3D):
+		return
+	var nx := xf * (n as Node3D).transform
+	if n is MeshInstance3D:
+		var aabb: AABB = (n as MeshInstance3D).get_aabb()
+		var min_y := INF
+		for i in range(8):
+			var corner := aabb.get_endpoint(i)
+			var world := nx * corner
+			if world.y < min_y:
+				min_y = world.y
+		if not state["has"]:
+			state["bottom"] = min_y
+			state["has"] = true
+		else:
+			state["bottom"] = min(state["bottom"], min_y)
+	for c in n.get_children():
+		_compute_bottom_recursive(c, nx, state)

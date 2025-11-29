@@ -1,6 +1,6 @@
-[gd_scene load_steps=6 format=3 uid="uid://em53dmg76c6f"]
+[gd_scene load_steps=6 format=3 uid="uid://da2mygmwqcrvs"]
 
-[ext_resource type="Script" uid="uid://dkya0n1c4jdax" path="res://ui/start_menu.gd" id="1"]
+[ext_resource type="Script" path="res://ui/start_menu.gd" id="1"]
 
 [sub_resource type="Environment" id="Environment_bx376"]
 background_mode = 1
